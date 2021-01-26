@@ -1,0 +1,118 @@
+<mat-card [ngClass]="{'post-with-comments': showComments}" *ngIf="!showEditPostContainer && !showDeletePostContainer">
+  <div class="header">
+    <mat-card-header>
+      <img mat-card-avatar src="{{post.author.avatar}}" alt="Avatar">
+      <mat-card-title>{{post.author.userName}}</mat-card-title>
+      <div class="date">{{post.createdAt | date:'d/M/yy, h:mm a'}}</div>
+    </mat-card-header>
+    <div *ngIf="currentUser !== undefined && currentUser.id === post.author.id">
+      <button mat-icon-button color="primary" (click)="toggleEditPostContainer()">
+        <mat-icon aria-label="Edit">create</mat-icon>
+      </button>
+      <button mat-icon-button color="primary" data-toggle="modal" data-target="#deleteModal"
+        (click)="toggleDeletePostContainer()">
+        <mat-icon aria-label="Delete">delete</mat-icon>
+      </button>
+    </div>
+  </div>
+  <img mat-card-image *ngIf="post.previewImage" mat-card-image src="{{post.previewImage}}" alt="Photo">
+  <mat-card-content>
+    <p>{{post.body}}</p>
+  </mat-card-content>
+  <mat-card-actions class="actions-buttons" align="end">
+    <div class="dropdown">
+      <button mat-icon-button color="primary" (click)="like()">
+        <mat-icon matBadge="{{post.reactions.length}}" matBadgeColor="accent" matBadgeSize="medium"
+          [matBadgeHidden]="post.reactions.length === 0" aria-label="Like">favorite</mat-icon>
+      </button>
+      <div *ngIf="post.reactions.length > 0" class="dropdown-content">
+        <mat-card>
+          <div *ngFor="let reaction of post.reactions; let i = index">
+            <div *ngIf="3 > i">{{reaction.user.userName}}</div>
+          </div>
+          <div class="showMore" *ngIf="post.reactions.length > 3" (click)="showReactions(true)">
+            <u>Show more</u>
+          </div>
+        </mat-card>
+      </div>
+    </div>
+    <div class="dropdown">
+      <button mat-icon-button color="primary" (click)="dislike()">
+        <mat-icon matBadge="{{post.negativeReactions.length}}" matBadgeColor="accent" matBadgeSize="medium"
+          [matBadgeHidden]="post.negativeReactions.length === 0" aria-label="Dislike">thumb_down</mat-icon>
+      </button>
+      <div *ngIf="post.negativeReactions.length > 0" class="dropdown-content">
+        <mat-card>
+          <div *ngFor="let negativeReaction of post.negativeReactions; let i = index">
+            <div *ngIf="3 > i">{{negativeReaction.user.userName}}</div>
+          </div>
+          <div class="showMore" *ngIf="post.negativeReactions.length > 3" (click)="showReactions(false)">
+            <u>Show more</u>
+          </div>
+        </mat-card>
+      </div>
+    </div>
+    <button mat-icon-button onfocus="this.blur()" color="accent" (click)="share()">
+      <mat-icon aria-label="Share">share</mat-icon>
+    </button>
+    <button mat-icon-button color="basic" (click)=" toggleComments()">
+      <mat-icon matBadge="{{post.comments.length}}" matBadgeColor="warn" matBadgeSize="medium"
+        [matBadgeHidden]="post.comments.length === 0" aria-label="Add comment">comment</mat-icon>
+    </button>
+  </mat-card-actions>
+  <div *ngIf="showComments">
+    <mat-divider></mat-divider>
+    <div class="new-comment">
+      <mat-form-field>
+        <textarea [(ngModel)]="newComment.body" matInput placeholder="Comment it..."></textarea>
+      </mat-form-field>
+      <button mat-icon-button color="primary" matTooltip="Send" (click)="sendComment()">
+        <mat-icon aria-label="Send">send</mat-icon>
+      </button>
+    </div>
+    <div *ngIf="post.comments.length > 0" class="comments-count">
+      Just {{post.comments.length}} in all
+    </div>
+    <app-comment *ngFor="let _comment of post.comments" [comment]="_comment"></app-comment>
+  </div>
+</mat-card>
+
+<mat-card *ngIf="!showEditPostContainer && showDeletePostContainer">
+  <form name="deleteForm" #deleteForm="ngForm" class="main-content">
+    <mat-card-title>
+      <div class="deletion-text">Are you sure you want to delete the post permanently?</div>
+    </mat-card-title>
+  </form>
+  <div class="buttons">
+    <button mat-raised-button color="primary" (click)="deletePost()">
+      Delete Post
+    </button>
+    <button mat-raised-button (click)="toggleDeletePostContainer()">
+      Back
+    </button>
+  </div>
+</mat-card>
+
+<mat-card class="post-edit-container" *ngIf="showEditPostContainer && !showDeletePostContainer">
+  <div *ngIf="loading" class="mat-spinner-wrapper">
+    <mat-spinner></mat-spinner>
+  </div>
+  <mat-card-actions class="edit-actions" align="end">
+    <input hidden #file accept="image/*" type="file" (change)="loadImage($event.target)">
+    <button mat-icon-button color="accent" (click)="file.click()">
+      <mat-icon aria-label="Choose a new image">image</mat-icon>
+    </button>
+    <button mat-icon-button color="primary" matTooltip="Edit" (click)="editPost()">
+      <mat-icon aria-label="Edit">create</mat-icon>
+    </button>
+  </mat-card-actions>
+  <mat-card-content>
+    <div class="image-container">
+      <img mat-card-image class="post-image" *ngIf="imageUrl" mat-card-image src="{{imageUrl}}" alt="Photo">
+    </div>
+    <img mat-card-image *ngIf="post.previewImage && !imageUrl" mat-card-image src="{{post.previewImage}}" alt="Photo">
+    <mat-form-field>
+      <textarea [(ngModel)]="post.body" matInput placeholder=""></textarea>
+    </mat-form-field>
+  </mat-card-content>
+</mat-card>

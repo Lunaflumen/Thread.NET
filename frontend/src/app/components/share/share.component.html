@@ -1,0 +1,12 @@
+<h2 mat-dialog-title class="title">Enter the recipient's email</h2>
+<div mat-dialog-content>
+  <form name="Form" #Form="ngForm" class="main-content">
+    <mat-form-field>
+      <input name="Email" [(ngModel)]="email" #inEmail="ngModel" matInput placeholder="Email">
+    </mat-form-field>
+    <div class="actions">
+      <button mat-raised-button (click)="close()">Back</button>
+      <button mat-raised-button color="primary" (click)="share(email)" (click)="close()">Share</button>
+    </div>
+  </form>
+</div>

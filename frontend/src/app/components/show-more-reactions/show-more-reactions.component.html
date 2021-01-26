@@ -1,0 +1,11 @@
+<div mat-dialog-content>
+  <div *ngIf="data.wich === true">
+    <div *ngFor="let reaction of reactions">{{reaction.user.userName}}</div>
+  </div>
+  <div *ngIf="data.wich === false">
+    <div *ngFor="let negativeReaction of negativeReactions">{{negativeReaction.user.userName}}</div>
+  </div>
+</div>
+<div class="actions">
+  <button mat-raised-button (click)="close()">Back</button>
+</div>
